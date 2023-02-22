@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react';
-import { nanoid } from 'nanoid';
+import { useEffect } from 'react';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 import ContactForm from './ContactForm/ContactForm';
 import css from './App.module.css';
 
+import { contactsSlice } from 'redux/contactsSlice';
+import { filterSlice } from 'redux/filtersSlice';
+import { useDispatch, useSelector } from 'react-redux';
+
 const LS_KEY = 'contacts';
 
 const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    const LSContacts = JSON.parse(localStorage.getItem(LS_KEY));
+  const { addContact, removeContact } = contactsSlice.actions;
+  const { changeFilter } = filterSlice.actions;
 
-    if (LSContacts) {
-      return LSContacts;
-    } else {
-      return [];
-    }
-  });
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
+
+  const contacts = useSelector(state => state.contacts);
+  const filter = useSelector(state => state.filter);
 
   const normalizedFilter = filter.toLowerCase().trim();
 
@@ -28,27 +28,18 @@ const App = () => {
   const updateContactsList = (newContactName, newContactNumber) => {
     isContactExists(newContactName)
       ? alert(`${newContactName} is already in contacts!`)
-      : setContacts(prevState => {
-          return [
-            {
-              id: nanoid(),
-              name: newContactName,
-              number: newContactNumber,
-            },
-            ...prevState,
-          ];
-        });
+      : dispatch(
+          addContact({ name: newContactName, number: newContactNumber })
+        );
   };
 
   const filterInputChange = ({ target }) => {
     const { value } = target;
-    setFilter(value);
+    dispatch(changeFilter(value));
   };
 
   const deleteContact = id => {
-    setContacts(prevState => {
-      return [...prevState.filter(contact => contact.id !== id)];
-    });
+    dispatch(removeContact(id));
   };
 
   const isContactExists = newName => {
