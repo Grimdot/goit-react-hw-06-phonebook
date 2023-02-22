@@ -11,3 +11,7 @@ export const filterSlice = createSlice({
     changeFilter: (state, action) => action.payload,
   },
 });
+
+export const { changeFilter } = filterSlice.actions;
+
+export const getFilter = state => state.filter;
