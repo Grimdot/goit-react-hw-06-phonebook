@@ -1,8 +1,16 @@
 import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { removeContact } from 'redux/contactsSlice';
 
 import css from './ContactItem.module.css';
 
-const ContactItem = ({ id, name, number, handleDeleteBtn }) => {
+const ContactItem = ({ id, name, number }) => {
+  const dispatch = useDispatch();
+
+  const deleteContact = id => {
+    dispatch(removeContact(id));
+  };
+
   return (
     <li className={css.contactItem}>
       <p>
@@ -11,7 +19,7 @@ const ContactItem = ({ id, name, number, handleDeleteBtn }) => {
       <button
         type="button"
         onClick={() => {
-          handleDeleteBtn(id);
+          deleteContact(id);
         }}
         className={css.button}
       >
